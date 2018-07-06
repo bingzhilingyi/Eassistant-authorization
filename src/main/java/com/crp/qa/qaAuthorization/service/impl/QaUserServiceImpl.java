@@ -23,6 +23,8 @@ import com.crp.qa.qaAuthorization.repository.QaSysUserRepository;
 import com.crp.qa.qaAuthorization.service.inte.QaUserService;
 import com.crp.qa.qaAuthorization.util.exception.QaUserException;
 
+import org.dozer.MappingException;
+
 
 /**
  * 用户管理服务
@@ -43,7 +45,7 @@ public class QaUserServiceImpl extends BaseServiceImpl<QaSysUser> implements QaU
 		List<QaSysUser> tList = qaSysUserRepository.findAll();
 		try {
 			return pojoToDto(QaSysUserDto.class,tList);
-		} catch (IllegalAccessException | InstantiationException e) {
+		} catch (IllegalAccessException | InstantiationException | MappingException e) {
 			throw new QaUserException("pojo转dto失败",e);
 		}
 	};

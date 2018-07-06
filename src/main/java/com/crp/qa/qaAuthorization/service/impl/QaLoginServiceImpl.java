@@ -23,7 +23,7 @@ import com.mysql.jdbc.StringUtils;
  */
 @Service(value="qaLoginService")
 @Transactional
-public class QaLoginServiceImpl implements QaLoginService {
+public class QaLoginServiceImpl extends BaseServiceImpl implements QaLoginService {
 	
 	@Resource(name="qaSysUserService")
 	private QaUserService qaSysUserService;
@@ -48,8 +48,9 @@ public class QaLoginServiceImpl implements QaLoginService {
 				//返回token
 				return token;
 			}else {
-				//如果登录失败，抛出错误
-				throw new QaLoginException("账号或密码错误");
+				//如果登录失败，日志记录一下
+				LOGGER.warn("账号或密码错误");
+				return null;
 			}
 		} catch (QaUserException e) {
 			throw new QaLoginException("登录发生未知错误",e);

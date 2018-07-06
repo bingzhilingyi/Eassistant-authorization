@@ -48,6 +48,9 @@ public class QaLoginController extends QaBaseController{
 			//调用登录方法去获取token,如果登录不上就会抛出异常
 			String token = qaLoginService.login(account, password);
 			dto.setToken(token);
+			if(token==null||token=="") {
+				dto.setMessage("账号或密码不对！");
+			}
 		} catch (QaLoginException e) {
 			this.returnError(e, dto);
 		}
