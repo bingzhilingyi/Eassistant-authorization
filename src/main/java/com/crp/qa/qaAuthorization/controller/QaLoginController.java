@@ -4,6 +4,8 @@
  */
 package com.crp.qa.qaAuthorization.controller;
 
+import java.util.Set;
+
 import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.crp.qa.qaAuthorization.domain.dto.QaSysUserDto;
 import com.crp.qa.qaAuthorization.service.inte.QaLoginService;
 import com.crp.qa.qaAuthorization.util.exception.QaLoginException;
 import com.crp.qa.qaAuthorization.util.transfer.QaBaseTransfer;
@@ -46,9 +49,10 @@ public class QaLoginController extends QaBaseController{
 		QaBaseTransfer dto = new QaBaseTransfer("success","登录成功!");		
 		try {
 			//调用登录方法去获取token,如果登录不上就会抛出异常
-			String token = qaLoginService.login(account, password);
-			dto.setToken(token);
-			if(token==null||token=="") {
+			QaSysUserDto user = qaLoginService.login(account, password);
+			dto.setToken(user.getToken());
+			dto.setContent(user);
+			if(user.getToken()==null||user.getToken()=="") {
 				dto.setMessage("账号或密码不对！");
 			}
 		} catch (QaLoginException e) {
@@ -78,4 +82,16 @@ public class QaLoginController extends QaBaseController{
 		return dto;
 	}
 
+	
+	@GetMapping(path="/findByToken")
+	public QaBaseTransfer findByToken(@RequestParam(value="logingToken") String logingToken) {
+		QaBaseTransfer dto = new QaBaseTransfer("success","已登录");
+		try {
+			QaSysUserDto user = qaLoginService.findByToken(logingToken);
+			dto.setContent(user);
+		} catch (QaLoginException e) {
+			this.returnError(e, dto);
+		}
+		return dto;
+	}
 }

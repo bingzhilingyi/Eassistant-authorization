@@ -2,7 +2,9 @@ package com.crp.qa.qaAuthorization.domain.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
+
 
 public class QaSysGroupDto implements Serializable{
 
@@ -27,7 +29,7 @@ public class QaSysGroupDto implements Serializable{
 	private String attribute9;
 	private String attribute10;
 	
-	private Set<QaSysGroupRightsDto> qaSysGroupRights;
+	private Set<QaSysGroupRightsDto> qaSysGroupRights = new HashSet<QaSysGroupRightsDto>(0);
 
 	public Integer getGroupId() {
 		return groupId;
@@ -166,6 +168,5 @@ public class QaSysGroupDto implements Serializable{
 		this.qaSysGroupRights = qaSysGroupRights;
 	}
 
-	
-	
+
 }

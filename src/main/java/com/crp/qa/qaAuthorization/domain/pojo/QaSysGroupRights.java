@@ -16,6 +16,10 @@ public class QaSysGroupRights {
 	private Integer rightsId;
 	private Integer rightsGroupId;
 	private String rightsCode;
+	private String rightsCreate;
+	private String rightsUpdate;
+	private String rightsSearch;
+	private String rightsDelete;
 	private Integer createdBy;
 	private Date creationDate;
 	private Integer lastUpdatedBy;
@@ -31,12 +35,14 @@ public class QaSysGroupRights {
 	private String attribute9;
 	private String attribute10;
 	
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="rights_id")
 	public Integer getRightsId() {
 		return rightsId;
 	}
+
 	public void setRightsId(Integer rightsId) {
 		this.rightsId = rightsId;
 	}
@@ -57,6 +63,38 @@ public class QaSysGroupRights {
 		this.rightsCode = rightsCode;
 	}
 	
+	@Column(name="rights_create")
+	public String getRightsCreate() {
+		return rightsCreate;
+	}
+	public void setRightsCreate(String rightsCreate) {
+		this.rightsCreate = rightsCreate;
+	}
+	
+	@Column(name="rights_update")
+	public String getRightsUpdate() {
+		return rightsUpdate;
+	}
+	public void setRightsUpdate(String rightsUpdate) {
+		this.rightsUpdate = rightsUpdate;
+	}
+	
+	@Column(name="rights_search")
+	public String getRightsSearch() {
+		return rightsSearch;
+	}
+	public void setRightsSearch(String rightsSearch) {
+		this.rightsSearch = rightsSearch;
+	}
+	
+	@Column(name="rights_delete")
+	public String getRightsDelete() {
+		return rightsDelete;
+	}
+	public void setRightsDelete(String rightsDelete) {
+		this.rightsDelete = rightsDelete;
+	}
+
 	@Column(name="created_by")
 	public Integer getCreatedBy() {
 		return createdBy;

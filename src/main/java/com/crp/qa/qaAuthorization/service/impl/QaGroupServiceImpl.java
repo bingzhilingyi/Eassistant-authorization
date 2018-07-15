@@ -1,31 +1,27 @@
 package com.crp.qa.qaAuthorization.service.impl;
 
 import com.crp.qa.qaAuthorization.domain.pojo.QaSysGroup;
-import com.crp.qa.qaAuthorization.domain.pojo.QaSysUser;
 import com.crp.qa.qaAuthorization.domain.dto.QaPagedDto;
 import com.crp.qa.qaAuthorization.domain.dto.QaSysGroupDto;
 import com.crp.qa.qaAuthorization.domain.dto.QaSysGroupSimpleDto;
 import com.crp.qa.qaAuthorization.service.inte.QaGroupService;
 import com.crp.qa.qaAuthorization.service.impl.BaseServiceImpl;
 import com.crp.qa.qaAuthorization.util.exception.QaGroupException;
-import com.crp.qa.qaAuthorization.util.exception.QaUserException;
 import com.crp.qa.qaAuthorization.repository.QaSysGroupRepository;
-
-import javax.transaction.Transactional;
+import com.crp.qa.qaAuthorization.repository.QaSysUserGroupRepository;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.dozer.MappingException;
 
 /**
@@ -39,6 +35,8 @@ public class QaGroupServiceImpl extends BaseServiceImpl<QaSysGroup> implements Q
     
     @Autowired
     private QaSysGroupRepository qaSysGroupRepository; 
+    @Autowired
+    private QaSysUserGroupRepository qaSysUserGroupRepository; 
     
     /**
      * get all group
@@ -150,6 +148,8 @@ public class QaGroupServiceImpl extends BaseServiceImpl<QaSysGroup> implements Q
 			throw new QaGroupException("传入对象为空，保存失败！");
 		}else if(dto.getGroupId()!=null) {
 			throw new QaGroupException("传入对象已有主键，保存失败！");
+		}else if(qaSysGroupRepository.existsByGroupName(dto.getGroupName())) {
+			throw new QaGroupException("权限组名重复，保存失败！");
 		}
 		try {
 			//dto 转 pojo
@@ -172,7 +172,10 @@ public class QaGroupServiceImpl extends BaseServiceImpl<QaSysGroup> implements Q
 	public void delete(Integer id) throws QaGroupException {
 		if(id==null) {
 			throw new QaGroupException("传入对象无主键，删除失败！");
-		}
+		}else if(qaSysUserGroupRepository.existsByGroupIdAndUserIdNotNull(id)) {
+			//判断当前角色是否有用户在使用
+			throw new QaGroupException("当前角色已被用户使用，不能删除！");
+		}		
 		//删除
 		qaSysGroupRepository.deleteById(id);
 	}
@@ -185,6 +188,8 @@ public class QaGroupServiceImpl extends BaseServiceImpl<QaSysGroup> implements Q
 			throw new QaGroupException("传入对象无主键，更新失败！");
 		}else if(!qaSysGroupRepository.existsById(dto.getGroupId())) {
 			throw new QaGroupException("传入对象在数据库中不存在，更新失败！");
+		}else if(qaSysGroupRepository.existsByGroupNameAndGroupIdNot(dto.getGroupName(),dto.getGroupId())) {
+			throw new QaGroupException("权限组名重复，更新失败！");
 		}
 		try {
 			//dto 转 pojo
@@ -193,7 +198,7 @@ public class QaGroupServiceImpl extends BaseServiceImpl<QaSysGroup> implements Q
 			//设置更新日期
 			t.setLastUpdateDate(new Date());
 			//保存
-			t = qaSysGroupRepository.save(t);
+			t = qaSysGroupRepository.saveAndFlush(t);
 			//pojo 转 dto
 			mapper.map(t, dto);
 			return dto;

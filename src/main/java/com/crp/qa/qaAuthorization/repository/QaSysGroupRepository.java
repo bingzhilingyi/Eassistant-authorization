@@ -30,4 +30,23 @@ public interface QaSysGroupRepository extends JpaRepository<QaSysGroup,Integer> 
 	 * @return Page<QaSysGroup>
 	 */
     public Page<QaSysGroup> findByGroupNameContainingOrderByGroupName(String groupName,Pageable pageable);
+    
+    /**
+     * 判断组名是否存在
+     * @param groupName
+     * @return
+     * @Date 2018年7月10日
+     * @author huangyue
+     */
+    public boolean existsByGroupName(String groupName);
+    
+    /**
+     * 判断ID不为传入值时，组名是否存在
+     * @param groupName
+     * @param groupId
+     * @return
+     * @Date 2018年7月10日
+     * @author huangyue
+     */
+    public boolean existsByGroupNameAndGroupIdNot(String groupName,Integer groupId);
 }

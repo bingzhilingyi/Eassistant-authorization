@@ -1,6 +1,7 @@
 package com.crp.qa.qaAuthorization.domain.pojo;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -40,7 +41,7 @@ public class QaSysGroup {
 	private String attribute9;
 	private String attribute10;
 	
-	private Set<QaSysGroupRights> qaSysGroupRights;
+	private Set<QaSysGroupRights> qaSysGroupRights = new HashSet<QaSysGroupRights>(0);
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -172,15 +173,14 @@ public class QaSysGroup {
 		this.attribute10 = attribute10;
 	}
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "rights_group_id", referencedColumnName = "group_id")
+	@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL)
+	@JoinColumn(name="rights_group_id",referencedColumnName="group_id")
 	public Set<QaSysGroupRights> getQaSysGroupRights() {
 		return qaSysGroupRights;
 	}
 	public void setQaSysGroupRights(Set<QaSysGroupRights> qaSysGroupRights) {
 		this.qaSysGroupRights = qaSysGroupRights;
 	}
-	
 	
 }
 

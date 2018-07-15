@@ -77,7 +77,7 @@ public interface QaUserService extends BaseService<QaSysUser>{
 	 * @return
 	 * @throws QaUserException
 	 */
-	public QaPagedDto<QaSysUserDto> findPagedByAccountOrName(String account,Integer page,Integer size,boolean isSlice) throws QaUserException;
+	public QaPagedDto<QaSysUserDto> findPagedByAccountOrName(String account,Integer page,Integer size,String searchType) throws QaUserException;
 	
 	/**
 	 * 保存传入的对象并返回保存后的对象

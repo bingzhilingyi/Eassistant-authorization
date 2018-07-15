@@ -4,6 +4,9 @@
  */
 package com.crp.qa.qaAuthorization.service.inte;
 
+import java.util.Set;
+
+import com.crp.qa.qaAuthorization.domain.dto.QaSysUserDto;
 import com.crp.qa.qaAuthorization.util.exception.QaLoginException;
 
 /**
@@ -22,7 +25,7 @@ public interface QaLoginService {
 	 * @return
 	 * @throws QaLoginException
 	 */
-	public String login(String account,String password) throws QaLoginException;
+	public QaSysUserDto login(String account,String password) throws QaLoginException;
 	
 	/**
 	 * 判断是否登录
@@ -33,4 +36,15 @@ public interface QaLoginService {
 	 * @throws QaLoginException
 	 */
 	public boolean isLogin(String token) throws QaLoginException;
+	
+	
+	/**
+	 * 根据token获取当前用户信息
+	 * @param token
+	 * @return
+	 * @throws QaLoginException
+	 * @Date 2018年7月11日
+	 * @author huangyue
+	 */
+	public QaSysUserDto findByToken(String token) throws QaLoginException;
 }

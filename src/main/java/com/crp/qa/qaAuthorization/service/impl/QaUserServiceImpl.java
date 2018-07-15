@@ -6,15 +6,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.crp.qa.qaAuthorization.domain.dto.QaPagedDto;
 import com.crp.qa.qaAuthorization.domain.dto.QaSysUserDto;
@@ -86,9 +86,9 @@ public class QaUserServiceImpl extends BaseServiceImpl<QaSysUser> implements QaU
 			try {
 				//定义返回对象
 				QaSysUserDto d = new QaSysUserDto();
-				PropertyUtils.copyProperties(d,t.get());
+				mapper.map(t.get(), d);
 				return d;
-			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			} catch (MappingException e) {
 				throw new QaUserException("pojo转dto失败",e);
 			}
 		}
@@ -109,9 +109,9 @@ public class QaUserServiceImpl extends BaseServiceImpl<QaSysUser> implements QaU
 			try {
 				//定义返回对象
 				QaSysUserDto d = new QaSysUserDto();
-				PropertyUtils.copyProperties(d,t);
+				mapper.map(t, d);
 				return d;
-			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			} catch (MappingException e) {
 				throw new QaUserException("pojo转dto失败",e);
 			}
 		}
@@ -134,7 +134,7 @@ public class QaUserServiceImpl extends BaseServiceImpl<QaSysUser> implements QaU
 	}
 	
 	@Override
-	public QaPagedDto<QaSysUserDto> findPagedByAccountOrName(String account,Integer page,Integer size,boolean isSlice) throws QaUserException{
+	public QaPagedDto<QaSysUserDto> findPagedByAccountOrName(String account,Integer page,Integer size,String searchType) throws QaUserException{
 		//如果传入account为空，直接查全部		
 		if(account==null||account.equals("")) {
 			return this.findPagedAll(page, size);
@@ -143,6 +143,7 @@ public class QaUserServiceImpl extends BaseServiceImpl<QaSysUser> implements QaU
 		//初始化参数
 		page = page==null?1:page;
 		size = size==null?20:size;
+		searchType = StringUtils.isBlank(searchType)?"account":searchType;
 		long totalElements = 0;
 		int totalPages = 0;
 		
@@ -152,16 +153,18 @@ public class QaUserServiceImpl extends BaseServiceImpl<QaSysUser> implements QaU
 		//设置分页信息
 		Pageable pageable = PageRequest.of(page,size);
 
-		//查询数据
-		if(isSlice) {
-			Slice<QaSysUser> userSlice = qaSysUserRepository.getByUserAccountContainingOrUserNameContaining(account, account, pageable);
-			tList = userSlice.getContent();
+		//区分不同查询方式
+		Page<QaSysUser> userPage;
+		//1.如果是account，就是查询账号或姓名
+		if(searchType.equals("account")) {
+			userPage = qaSysUserRepository.findByUserAccountContainingOrUserNameContaining(account, account, pageable);		
 		}else {
-			Page<QaSysUser> userPage = qaSysUserRepository.findByUserAccountContainingOrUserNameContaining(account, account, pageable);
-			tList = userPage.getContent();
-			totalElements = userPage.getTotalElements();
-			totalPages = userPage.getTotalPages();
+			//2.否则就是查询角色
+			userPage = qaSysUserRepository.findByGroupNameContaining(account, pageable);
 		}
+		tList = userPage.getContent();
+		totalElements = userPage.getTotalElements();
+		totalPages = userPage.getTotalPages();
 		
 		//定义返回值
 		QaPagedDto<QaSysUserDto> returnDto = new QaPagedDto<QaSysUserDto>();
@@ -186,16 +189,16 @@ public class QaUserServiceImpl extends BaseServiceImpl<QaSysUser> implements QaU
 		try {
 			//dto 转 pojo
 			QaSysUser t = new QaSysUser();
-			PropertyUtils.copyProperties(t,dto);
+			mapper.map(dto, t);
 			//设置日期
 			t.setCreationDate(new Date());
 			t.setLastUpdateDate(new Date());
 			//保存
 			t = qaSysUserRepository.save(t);
 			//pojo 转 dto
-			PropertyUtils.copyProperties(dto,t);
+			mapper.map(t, dto);
 			return dto;
-		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+		} catch (MappingException e) {
 			throw new QaUserException("pojo转dto失败",e);
 		}
 	}
@@ -223,15 +226,15 @@ public class QaUserServiceImpl extends BaseServiceImpl<QaSysUser> implements QaU
 		try {
 			//dto 转 pojo
 			QaSysUser t = new QaSysUser();
-			PropertyUtils.copyProperties(t,dto);
+			mapper.map(dto, t);
 			//设置更新日期
 			t.setLastUpdateDate(new Date());
 			//保存
 			t = qaSysUserRepository.save(t);
 			//pojo 转 dto
-			PropertyUtils.copyProperties(dto,t);
+			mapper.map(t, dto);
 			return dto;
-		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+		} catch (MappingException e) {
 			throw new QaUserException("pojo转dto失败",e);
 		}
 	}

@@ -125,11 +125,13 @@ public class QaGroupController extends QaBaseController{
 	 */
 	@PutMapping(path="/update")
 	public QaBaseTransfer update(HttpEntity<String> req){
-		JSONObject json = JSONObject.parseObject(req.getBody());
-		String group = json.get("group").toString();
-		QaBaseTransfer dto = new QaBaseTransfer("success","更新成功！");		
-		QaSysGroupDto d = JSONObject.parseObject(group, QaSysGroupDto.class);
+		QaBaseTransfer dto = new QaBaseTransfer("success","更新成功！");	
 		try {
+			JSONObject json = JSONObject.parseObject(req.getBody());
+			String group = json.get("group").toString();
+				
+			QaSysGroupDto d = JSONObject.parseObject(group, QaSysGroupDto.class);
+			
 			QaSysGroupDto userDto = qaGroupService.update(d);
 			dto.setContent(userDto);
 		}catch (QaGroupException e) {

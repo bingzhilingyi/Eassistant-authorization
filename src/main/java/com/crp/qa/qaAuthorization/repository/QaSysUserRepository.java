@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.crp.qa.qaAuthorization.domain.pojo.QaSysUser;
 
@@ -53,4 +54,23 @@ public interface QaSysUserRepository extends JpaRepository<QaSysUser,Integer> {
 	 * @return
 	 */
 	public Slice<QaSysUser> getByUserAccountContainingOrUserNameContaining(String userAccount,String userName,Pageable pageable);
+	
+	
+	
+	static String baseSql = "FROM QaSysUser qsu,QaSysUserGroup qsug,QaSysGroup qsg "
+			+ " WHERE qsu.userId = qsug.userId"
+			+ " and qsug.groupId = qsg.groupId"
+			+ " and qsg.groupName like %?1%";
+	
+	/**
+	 * 根据角色查询用户
+	 * @param groupName
+	 * @param pageable
+	 * @return
+	 * @Date 2018年7月10日
+	 * @author huangyue
+	 */
+	@Query(value = "SELECT  qsu " + baseSql,
+		    countQuery = "SELECT count(1) " + baseSql)
+	Page<QaSysUser> findByGroupNameContaining(String groupName, Pageable pageable);
 }

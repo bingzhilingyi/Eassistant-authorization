@@ -1,12 +1,18 @@
 package com.crp.qa.qaAuthorization.domain.pojo;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -34,6 +40,8 @@ public class QaSysUser {
 	private String attribute10;
 	private String userEmail;
 	private Integer userPhone;
+	
+	private Set<QaSysUserGroup> qaSysUserGroup = new HashSet<QaSysUserGroup>(0);
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -202,6 +210,16 @@ public class QaSysUser {
 	}
 	public void setUserPhone(Integer userPhone) {
 		this.userPhone = userPhone;
+	}
+	
+	
+	@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL)
+	@JoinColumn(name="user_id",referencedColumnName="user_id")
+	public Set<QaSysUserGroup> getQaSysUserGroup() {
+		return qaSysUserGroup;
+	}
+	public void setQaSysUserGroup(Set<QaSysUserGroup> qaSysUserGroup) {
+		this.qaSysUserGroup = qaSysUserGroup;
 	}
 	
 	

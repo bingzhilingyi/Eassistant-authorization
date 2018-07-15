@@ -132,11 +132,11 @@ public class QaUserController extends QaBaseController{
 			@RequestParam(value="account") String account,
 			@RequestParam(value="page",defaultValue="0") Integer page,
 			@RequestParam(value="size",defaultValue="10") Integer size,
-			@RequestParam(value="isSlice",defaultValue="false") Boolean isSlice){
+			@RequestParam(value="searchType",defaultValue="account") String searchType){
 		//创建返回对象
 		QaPagedTransfer dto = new QaPagedTransfer("success","查询成功！");
 		try {
-			QaPagedDto<QaSysUserDto> userPage = qaSysUserService.findPagedByAccountOrName(account, page, size, isSlice);
+			QaPagedDto<QaSysUserDto> userPage = qaSysUserService.findPagedByAccountOrName(account, page, size, searchType);
 			dto.setTotalElements(userPage.getTotalElements());
 			dto.setTotalPages(userPage.getTotalPages());
 			dto.setContent(userPage.getList());
